@@ -22,18 +22,27 @@
           </button>
           <dl class="hotPlace" v-if="isHotPlace">
             <dt>热门搜索</dt>
-            <dd v-for="(item, idx) in hotPlace" :key="idx">{{ item }}</dd>
+            <dd
+              v-for="(item, idx) in $store.state.home.hotPlace.slice(0, 5)"
+              :key="idx"
+            >
+              {{ item.name }}
+            </dd>
           </dl>
           <dl class="searchList" v-if="isSearchList">
-            <dd v-for="(item, idx) in searchList" :key="idx">{{ item }}</dd>
+            <dd v-for="(item, idx) in searchList" :key="idx">
+              {{ item.name }}
+            </dd>
           </dl>
         </div>
         <p class="suggset">
-          <a href="#">故宫博物院</a>
-          <a href="#">故宫博物院</a>
-          <a href="#">故宫博物院</a>
-          <a href="#">故宫博物院</a>
-          <a href="#">故宫博物院</a>
+          <a
+            href="#"
+            v-for="(item, idx) in $store.state.home.hotPlace.slice(0, 5)"
+            :key="idx"
+          >
+            {{ item.name }}
+          </a>
         </p>
         <ul class="nav">
           <li>
@@ -74,36 +83,52 @@
 </template>
 
 <script type="text/ecmascript-6">
+import _ from 'lodash'
+import { async } from 'q'
 export default {
-  data () {
+  data() {
     return {
       search: '',
       isFoucs: false,
-      hotPlace: ['火锅', '火锅', '火锅', '火锅', '火锅', '火锅'],
-      searchList: ['故宫', '故宫', '故宫', '故宫', '故宫', '故宫']
+      hotPlace: [],
+      searchList: []
     }
   },
   computed: {
-    isHotPlace () {
+    isHotPlace() {
       return this.isFoucs && !this.search
     },
-    isSearchList () {
+    isSearchList() {
       return this.isFoucs && this.search
     }
   },
   methods: {
-    focus () {
+    focus() {
       this.isFoucs = true
     },
-    blur () {
+    blur() {
       const self = this
       setTimeout(() => {
         self.isFoucs = false
       }, 200)
     },
-    input () {
-
-    }
+    input: _.debounce(async function () { // lodash防抖函数 此处不能用箭头函数  否则this指向错误
+      const self = this
+      const city = self.$store.state.geo.position.city.replace('市', '')
+      self.searchList = []
+      const {
+        status,
+        data: {
+          top
+        }
+      } = await self.$axios.get('/search/top', {
+        params: {
+          input: self.search,
+          city
+        }
+      })
+      self.searchList = top.slice(0, 10)
+    }, 300)
   }
 }
 </script>
