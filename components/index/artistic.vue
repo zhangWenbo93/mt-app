@@ -107,7 +107,6 @@ export default {
           }
         })
         if (status === 200 && count > 0) {
-          console.log('pois', pois.filter(item => item.photos.length))
           const r = pois.filter(item => item.photos.length).map((item) => {
             return {
               title: item.name,

@@ -26,18 +26,22 @@
               v-for="(item, idx) in $store.state.home.hotPlace.slice(0, 5)"
               :key="idx"
             >
-              {{ item.name }}
+              <a :href="`/products?keyword=${encodeURIComponent(item.name)}`">
+                {{ item.name }}
+              </a>
             </dd>
           </dl>
           <dl class="searchList" v-if="isSearchList">
             <dd v-for="(item, idx) in searchList" :key="idx">
-              {{ item.name }}
+              <a :href="`/products?keyword=${encodeURIComponent(item.name)}`">
+                {{ item.name }}
+              </a>
             </dd>
           </dl>
         </div>
         <p class="suggset">
           <a
-            href="#"
+            :href="`/products?keyword=${encodeURIComponent(item.name)}`"
             v-for="(item, idx) in $store.state.home.hotPlace.slice(0, 5)"
             :key="idx"
           >
